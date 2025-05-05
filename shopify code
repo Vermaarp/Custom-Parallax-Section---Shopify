@@ -1,0 +1,300 @@
+{% schema %}
+{
+  "name": "Custom Parallax Section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Video Background",
+      "settings": [
+        {
+          "type": "url",
+          "id": "video",
+          "label": "Video URL"
+        },
+        {
+          "type": "text",
+          "id": "overlay_text",
+          "label": "Overlay Text",
+          "default": "Welcome to Our Store"
+        }
+      ]
+    },
+    {
+      "type": "parallax",
+      "name": "Parallax Banner",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "parallax_image",
+          "label": "Background Image"
+        },
+        {
+          "type": "text",
+          "id": "parallax_text",
+          "label": "Banner Text",
+          "default": "Parallax Banner"
+        }
+      ]
+    },
+    {
+      "type": "featured_collection",
+      "name": "Featured Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Select Collection"
+        }
+      ]
+    },
+    {
+      "type": "custom_liquid",
+      "name": "Custom Liquid",
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "custom_code",
+          "label": "Custom Liquid Code"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Parallax Section",
+      "blocks": [
+        { "type": "video" },
+        { "type": "parallax" },
+        { "type": "featured_collection" },
+        { "type": "custom_liquid" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  /* Reset */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* General Section */
+  .custom-parallax-section {
+    width: 100%;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    position: relative;
+  }
+
+  /* Video Background */
+  .custom-video-section {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .custom-video-section video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .custom-video-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  /* Parallax Banner */
+  .custom-parallax-banner {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Parallax effect for desktop */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  /* Featured Collection */
+  .custom-featured-collection {
+    padding: 50px 20px;
+    background: #fff;
+    text-align: center;
+  }
+  .custom-collection-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .custom-collection-product {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .custom-collection-product img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  /* Navigation Dots */
+  .custom-nav-dots {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+  }
+  .custom-dot {
+    display: block;
+    width: 12px;
+    height: 12px;
+    background: gray;
+    margin: 10px 0;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .custom-dot.active {
+    background: black;
+  }
+
+  /* Mobile Fix */
+  @media (max-width: 768px) {
+    .custom-parallax-banner {
+
+      height: 100vh;
+
+    }
+
+    .custom-parallax-banner h1 {
+      font-size: 1.5rem; /* Adjust font size for mobile */
+    }
+
+    /* Video Section on Mobile */
+    .custom-video-section {
+      height: 100vh; /* Adjust height of video section */
+    }
+    .custom-video-overlay {
+      font-size: 1.2rem; /* Adjust overlay text size */
+    }
+
+    /* Featured Collection on Mobile */
+    .custom-collection-container {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .custom-collection-product {
+      width: 90%; /* Make collection items more responsive */
+    }
+
+    /* Navigation Dots */
+    .custom-nav-dots {
+      right: 10px; /* Adjust dot positioning */
+    }
+    .custom-dot {
+      width: 10px;
+      height: 10px; /* Smaller dots for mobile */
+    }
+  }
+</style>
+
+<div class="custom-parallax-section">
+  {% for block in section.blocks %}
+    {% case block.type %}
+      {% when 'video' %}
+        <section class="custom-video-section" id="custom-section-{{ forloop.index }}">
+          <video autoplay loop muted playsinline>
+            <source src="{{ block.settings.video }}" type="video/mp4">
+          </video>
+          <div class="custom-video-overlay">{{ block.settings.overlay_text }}</div>
+        </section>
+
+      {% when 'parallax' %}
+        <section
+          class="custom-parallax-banner"
+          id="custom-section-{{ forloop.index }}"
+          style="background-image: url('{{ block.settings.parallax_image | img_url: '1920x1080' }}');"
+        >
+          {{ block.settings.parallax_text }}
+        </section>
+
+      {% when 'featured_collection' %}
+        <section class="custom-featured-collection" id="custom-section-{{ forloop.index }}">
+          <h2>Featured Collection</h2>
+          <div class="custom-collection-container">
+            {% if block.settings.collection %}
+              {% for product in block.settings.collection.products limit: 3 %}
+                <div class="custom-collection-product">
+                  <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
+                  <p>{{ product.title }}</p>
+                  <p>{{ product.price | money }}</p>
+                </div>
+              {% endfor %}
+            {% else %}
+              <p>No collection selected.</p>
+            {% endif %}
+          </div>
+        </section>
+
+      {% when 'custom_liquid' %}
+        <section class="custom-custom-liquid" id="custom-section-{{ forloop.index }}">
+          {{ block.settings.custom_code }}
+        </section>
+    {% endcase %}
+  {% endfor %}
+
+  <!-- Navigation Dots -->
+  <div class="custom-nav-dots">
+    {% for block in section.blocks %}
+      <span class="custom-dot" data-target="custom-section-{{ forloop.index }}"></span>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const dots = document.querySelectorAll(".custom-dot");
+      const sections = document.querySelectorAll(".custom-parallax-section section");
+
+      dots.forEach((dot, index) => {
+          dot.addEventListener("click", function () {
+              const targetSection = sections[index];
+              if (targetSection) {
+                  window.scrollTo({
+                      top: targetSection.offsetTop,
+                      behavior: "smooth",
+                  });
+              }
+          });
+      });
+
+      window.addEventListener("scroll", function () {
+          let scrollPosition = window.scrollY;
+
+          sections.forEach((section, index) => {
+              const sectionTop = section.offsetTop;
+              const sectionHeight = section.offsetHeight;
+
+              if (scrollPosition >= sectionTop - sectionHeight / 3) {
+                  dots.forEach((dot) => dot.classList.remove("active"));
+                  dots[index].classList.add("active");
+              }
+          });
+      });
+  });
+</script>
